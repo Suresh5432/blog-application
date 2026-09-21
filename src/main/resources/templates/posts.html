@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog Application</title>
+    <link rel="stylesheet" href="/css/posts.css">
+</head>
+<body>
+<div class="page-container">
+    <header class="header">
+        <div class="site-title">
+            My Blog Application
+        </div>
+        <div class="header-actions">
+            <form th:action="@{/posts}" method="get" class="search-form">
+                <input type="hidden" name="start" value="1">
+                <input type="hidden" name="limit" th:value="${limit}">
+                <input type="text" name="search" placeholder="Search" th:value="${search}">
+                <button type="submit">Search</button>
+            </form>
+            <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="login-link">Login</a>
+            <a th:href="@{/logout}" sec:authorize="isAuthenticated()" class="login-link">Logout</a>
+            <a th:href="@{/newpost}" class="login-link">Create Post</a>
+        </div>
+    </header>
+    <div class="controls">
+        <form th:action="@{/posts}" method="get" class="filter-form">
+            <input type="hidden" name="search" th:value="${search}">
+            <input type="hidden" name="sortField" th:value="${sortField}">
+            <input type="hidden" name="order" th:value="${order}">
+            <label for="author">Author:</label>
+            <select name="authorId" id="author">
+                <option value="">All Authors</option>
+                <option th:each="author : ${allAuthors}"
+                        th:value="${author.id}"
+                        th:text="${author.name}"
+                        th:selected="${authorId == author.id}">
+                </option>
+            </select>
+            <label>Published From:</label>
+            <input type="text" name="publishedFrom" placeholder="dd/MM/yy">
+            <label>Published To:</label>
+            <input type="text" name="publishedTo" placeholder="dd/MM/yy">
+            <label for="tagId">Tags:</label>
+            <select name="tagId" id="tagId" multiple>
+                <option th:each="tag : ${allTags}"
+                        th:value="${tag.id}"
+                        th:text="${tag.name}"
+                        th:selected="${tagIds.contains(tag.id)}">
+                </option>
+            </select>
+            <button type="submit">Apply Filter</button>
+            <a th:href="@{/posts}">Clear Filters</a>
+        </form>
+        <form th:action="@{/posts}" method="get" class="sort-form">
+            <input type="hidden" name="start" value="1">
+            <input type="hidden" name="limit" value="10">
+            <input type="hidden" name="search" th:value="${search}">
+            <input type="hidden" name="filter" th:value="${filter}">
+            <input type="hidden" name="sortField" value="publishedAt">
+            <select name="order" onchange="this.form.submit()">
+                <option value="" th:selected="${order == null or order == ''}">Sort</option>
+                <option value="desc" th:selected="${order == 'desc'}">Newest First</option>
+                <option value="asc" th:selected="${order == 'asc'}">Oldest First</option>
+            </select>
+        </form>
+    </div>
+    <main class="posts-grid">
+        <article class="post-card" th:each="post :${posts}">
+            <h2 class="post-title">
+                <a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">Post Title</a>
+            </h2>
+            <div class="post-meta">
+                <span th:text="${post.author.name}">Author</span>
+                <span>,</span>
+                <span th:text="${#temporals.format(post.publishedAt,'dd/MM/yyyy hh:mm a')}">
+                    18/08/2026
+                </span>
+            </div>
+            <p class="post-excerpt" th:text="${post.excerpt}">Post excerpt goes here.</p>
+            <div class="tags">
+                <span class="tag"  th:text="${post.tags}">Java</span>
+            </div>
+        </article>
+        <div class="no-posts" th:if="${posts.isEmpty()}">
+            <p>No posts found.</p>
+        </div>
+    </main>
+    <div class="pagination">
+        <a th:if="${posts.hasPrevious()}"
+           th:href="@{/posts(
+            start=${start - limit},
+            limit=${limit})}">&lt; Previous</a>
+        <span th:unless="${posts.hasPrevious()}" class="disabled">
+        &lt; Previous
+    </span>
+        <span class="page-number">
+        Page <span th:text="${posts.number + 1}">1</span>
+        of <span th:text="${posts.totalPages}">2</span>
+    </span>
+        <a th:if="${posts.hasNext()}"
+           th:href="@{/posts(
+            start=${start + limit},
+            limit=${limit})}">Next &gt;</a>
+        <span th:unless="${posts.hasNext()}" class="disabled">
+        Next &gt;
+    </span>
+    </div>
+</div>
+</body>
+</html>

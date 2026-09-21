@@ -1,0 +1,136 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: #222;
+}
+.page-container {
+    width: 85%;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 90vh;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+.site-title {
+    font-size: 30px;
+    font-weight: 400;
+}
+.back-link {
+    text-decoration: none;
+    font-size: 16px;
+    color: #2878e3;
+}
+.create-post-container {
+    width: 80%;
+    max-width: 900px;
+    margin: 20px auto;
+}
+.create-post-container h1 {
+    font-size: 25px;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+.post-form {
+    width: 100%;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+}
+.form-group label {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #555;
+}
+.form-group textarea {
+    resize: vertical;
+    min-height: 230px;
+    max-height: 240px;
+}
+.form-group small {
+    margin-top: 6px;
+    color: #777;
+    font-size: 13px;
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+}
+.cancel-button,
+.submit-button {
+    padding: 11px 20px;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.cancel-button {
+    border: 1px solid #aaa;
+    color: #333;
+    background-color: #fff;
+}
+.submit-button {
+    border: 1px solid #2878e3;
+    background-color: #2878e3;
+    color: white;
+}
+.cancel-button:hover {
+    background-color: #f5f5f5;
+}
+.submit-button:hover {
+    background-color: #1d65c1;
+}
+@media (max-width: 700px) {
+    .page-container {
+        width: 100%;
+    }
+    .create-post-container {
+        width: 90%;
+    }
+    .header {
+        padding: 25px 20px;
+    }
+    .site-title {
+        font-size: 24px;
+    }
+    .form-actions {
+        flex-direction: column;
+    }
+    .cancel-button,
+    .submit-button {
+        text-align: center;
+    }
+}
+.error{
+    color: red;
+}
+#author{
+    padding: 10px;
+}

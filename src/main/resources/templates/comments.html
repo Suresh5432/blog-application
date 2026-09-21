@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/comments.css">
+</head>
+<body>
+    <div class="comment-section">
+        <h2>Leave a Comment</h2>
+        <form th:action="@{/posts/{id}/comments(id=${id})}"
+            method="post" class="comment-form">
+            <input type="hidden" th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <div class="form-group" sec:authorize="!isAuthenticated()">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name"
+                        placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email"
+                           placeholder="Enter your email" required>
+                </div>
+            </div>
+            <div class="form-group" sec:authorize="isAuthenticated()">
+                <div class="form-group">
+                    <label for="name1">Name</label>
+                    <input type="text" id="name1"
+                           th:value="${currentUser.name}"
+                           readonly>
+                </div>
+                <div class="form-group">
+                    <label for="email1">Email</label>
+                    <input type="email" id="email1"
+                           th:value="${currentUser.email}"
+                           readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <textarea id="comment" name="comment" rows="6"
+                      placeholder="Write your comment..." required></textarea>
+            </div>
+            <button type="submit" class="comment-btn">Post Comment</button>
+        </form>
+        <br>
+        <a th:href="@{/posts/{id}(id=${id})}" class="back-bth">Back</a>
+    </div>
+</body>
+</html>
