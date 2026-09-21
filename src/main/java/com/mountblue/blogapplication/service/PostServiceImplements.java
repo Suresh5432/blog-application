@@ -265,7 +265,7 @@ public class PostServiceImplements implements PostService {
                 ? publishedTo.atTime(LocalTime.MAX)
                 : null;
         return (root, query, cb)->
-                cb.greaterThanOrEqualTo(root.get("publishedAt"), to);
+                cb.lessThanOrEqualTo(root.get("publishedAt"), to);
     }
     private Specification<Post> containsSearch(String search) {
         return (root, query, cb)->{
@@ -315,13 +315,13 @@ public class PostServiceImplements implements PostService {
             RequestPostDto dto,
             Users currentUser) {
         if (currentUser.getRole()==Role.ADMIN){
-            return currentUser;
+            return usersRepository.findByName(dto.getAuthor())
+                    .orElseThrow(()->
+                            new ResponseStatusException(
+                                    HttpStatus.NOT_FOUND,
+                                    "Author not found"));
         }
-        return usersRepository.findByName(dto.getAuthor())
-                .orElseThrow(()->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Author not found"));
+        return currentUser;
     }
 
     private String normalizeTag(String tag){
