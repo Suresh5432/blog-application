@@ -1,28 +1,21 @@
 package com.mountblue.blogapplication.dto;
 
-import com.mountblue.blogapplication.entity.Comments;
-import com.mountblue.blogapplication.entity.Users;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-@ToString
 @Getter
 @Setter
-public class ResponsePostDto {
+public class RestPostResponseDto {
     private Long id;
     private String title;
     private String excerpt;
     private String content;
-    private Users author;
+    private AuthorDto author;
     private LocalDateTime publishedAt;
-    private boolean isPublished;
+    private boolean published;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String tags;
-    private List<Comments> comments;
-
 }

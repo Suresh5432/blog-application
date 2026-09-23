@@ -3,6 +3,7 @@ package com.mountblue.blogapplication.controller;
 import com.mountblue.blogapplication.entity.Comments;
 import com.mountblue.blogapplication.entity.Users;
 import com.mountblue.blogapplication.security.CustomUserDetails;
+import com.mountblue.blogapplication.service.CommentsService;
 import com.mountblue.blogapplication.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class CommentsController {
 
-    private final PostService postService;
+    private final CommentsService commentsService;
 
     @GetMapping("/posts/{id}/comment")
     public String viewComments(@PathVariable Long id,
@@ -43,7 +44,7 @@ public class CommentsController {
             email=currentUser.getEmail();
         }
         Comments comments=new Comments(name,email,comment);
-        postService.addComment(id, comments);
+        commentsService.addComments(id, comments);
         return "redirect:/posts/" +id;
     }
     @PreAuthorize("hasRole('ADMIN')or@postSecurity.isOwner(#postId,authentication)")
@@ -52,7 +53,7 @@ public class CommentsController {
                                @PathVariable Long commentId,
                                Model model,
                                @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Comments comments=postService.findCommentById(commentId);
+        Comments comments=commentsService.findCommentById(commentId);
         model.addAttribute("comment",comments);
         model.addAttribute("postId",postId);
         return "edit-comment";
@@ -62,13 +63,13 @@ public class CommentsController {
     public String updateComment(@PathVariable Long postId,
                                 @PathVariable Long commentId,
                                 @RequestParam String comment) {
-        postService.updateComment(commentId,comment);
+        commentsService.updateComment(commentId,comment);
         return "redirect:/posts/" +postId;
     }
     @PreAuthorize("hasRole('ADMIN')or@postSecurity.isOwner(#postId,authentication)")
     @PostMapping("/posts/{postId}/comments/{commentId}/delete")
     public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId) {
-        postService.deleteComment(commentId);
+        commentsService.deleteComment(commentId);
         return "redirect:/posts/" +postId;
     }
 }

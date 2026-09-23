@@ -1,7 +1,9 @@
 package com.mountblue.blogapplication.service;
 
+import com.mountblue.blogapplication.dto.AuthorDto;
 import com.mountblue.blogapplication.dto.RequestPostDto;
 import com.mountblue.blogapplication.dto.ResponsePostDto;
+import com.mountblue.blogapplication.dto.RestPostResponseDto;
 import com.mountblue.blogapplication.entity.Comments;
 import com.mountblue.blogapplication.entity.Post;
 import com.mountblue.blogapplication.entity.Tags;
@@ -58,15 +60,6 @@ public class PostServiceImplements implements PostService {
         return usersRepository.findAll();
     }
 
-    @Transactional
-    @Override
-    public void addComment(Long id, Comments comments) {
-        Post post =postRepository.findById(id)
-                        .orElseThrow(()-> new RuntimeException("Post not found"));
-        post.addComments(comments);
-        postRepository.save(post);
-    }
-
 
     @Override
     public Post findById(Long id) {
@@ -120,26 +113,9 @@ public class PostServiceImplements implements PostService {
         postRepository.findById(id).ifPresent(postRepository::delete);
     }
 
-    @Override
-    public Comments findCommentById(Long id) {
-        return commentsRepository.findById(id).orElseThrow(()->new RuntimeException("comment not found"));
-    }
     @Transactional
     @Override
-    public void updateComment(Long commentId, String comments) {
-        Comments comment=findCommentById(commentId);
-        comment.setComment(comments);
-        commentsRepository.save(comment);
-    }
-    @Transactional
-    @Override
-    public void deleteComment(Long id) {
-        Comments comment=findCommentById(id);
-        commentsRepository.delete(comment);
-    }
-    @Transactional
-    @Override
-    public void savePost(
+    public Post savePost(
             RequestPostDto dto,
             String tagName,
             Users currentUser) {
@@ -149,9 +125,53 @@ public class PostServiceImplements implements PostService {
                     :updatePost(dto,currentUser);
 
         updateTags(post,tagName);
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
+    // Rest Services imple
+
+
+    @Override
+    public Page<RestPostResponseDto> findRestPosts(
+            Integer start,
+            Integer limit,
+            Long authorId,
+            List<Long> tagIds,
+            LocalDate publishedFrom,
+            LocalDate publishedTo,
+            String sortField,
+            String order,
+            String search) {
+
+        validateSearchParameters(
+                start,
+                limit,
+                sortField,
+                order,
+                publishedFrom,
+                publishedTo
+        );
+
+        Pageable pageable = createPageable(start, limit, order);
+
+        Specification<Post> specification =
+                buildSpecification(
+                        authorId,
+                        tagIds,
+                        publishedFrom,
+                        publishedTo,
+                        search
+                );
+
+        return postRepository.findAll(specification, pageable)
+                .map(this::restResponseDto);
+    }
+
+    @Override
+    public RestPostResponseDto findRestPostById(Long id) {
+        Post post=postRepository.findById(id).orElseThrow(()->new RuntimeException("post not found"));
+        return restResponseDto(post);
+    }
 
     // helper methods
 
@@ -402,5 +422,39 @@ public class PostServiceImplements implements PostService {
         responsePostDto.setTags(tags);
         responsePostDto.setComments(post.getComments());
         return responsePostDto;
+    }
+    private RestPostResponseDto restResponseDto(Post post) {
+
+        RestPostResponseDto dto = new RestPostResponseDto();
+
+        dto.setId(post.getId());
+        dto.setTitle(post.getTitle());
+        dto.setExcerpt(post.getExcerpt());
+        dto.setContent(post.getContent());
+
+        if (post.getAuthor() != null) {
+
+            AuthorDto author = new AuthorDto(
+                    post.getAuthor().getId(),
+                    post.getAuthor().getName(),
+                    post.getAuthor().getEmail()
+            );
+
+            dto.setAuthor(author);
+        }
+        dto.setPublishedAt(post.getPublishedAt());
+        dto.setPublished(post.isPublished());
+        dto.setCreatedAt(post.getCreatedAt());
+        dto.setUpdatedAt(post.getUpdatedAt());
+
+        String tags = post.getTags()
+                .stream()
+                .map(Tags::getName)
+                .sorted()
+                .collect(Collectors.joining(", "));
+
+        dto.setTags(tags);
+
+        return dto;
     }
 }
