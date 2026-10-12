@@ -26,5 +26,5 @@ jobs:
         run: java -version
 
       - name: Build and test
-        run: ./mvn --batch-mode clean verify
+        run: ./mvnw --batch-mode clean verify
 
