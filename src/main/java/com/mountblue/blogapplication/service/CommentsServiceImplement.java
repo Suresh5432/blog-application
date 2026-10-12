@@ -141,6 +141,7 @@ public class CommentsServiceImplement implements CommentsService {
 
         dto.setCreatedAt(comment.getCreatedAt());
         dto.setUpdatedAt(comment.getUpdatedAt());
+        System.out.println("Comment Response DTO: " + dto);
 
         return dto;
     }
