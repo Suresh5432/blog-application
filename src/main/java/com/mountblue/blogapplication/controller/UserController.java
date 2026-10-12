@@ -20,7 +20,7 @@ public class UserController {
     }
     @GetMapping("/register")
     public String registerUser(Model model) {
-        model.addAttribute("user",new RequestUsersDto());
+        model.addAttribute("user", new RequestUsersDto());
         return "user-register";
     }
     @PostMapping("/register")
